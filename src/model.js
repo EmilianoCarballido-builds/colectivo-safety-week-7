@@ -33,6 +33,7 @@ export function act(s,id,action,role,value,now=Date.now()) {
  else if(action==='review'){
   if(!['Despacho A','Despacho B'].includes(role)||!e.shared||e.status!=='Nueva')throw Error('Revisión no disponible');
   if(!contexts.includes(value?.context)||!outcomes.includes(value?.outcome))throw Error('Selecciona contexto y resultado');
+  if(value.context==='Sin contexto suficiente'&&value.outcome==='Solicitar revisión de equipo')throw Error('Recaba contexto antes de proponer apoyo');
   e.context=value.context;e.firstReviewer=role;e.reviewedAt=now;
   e.status=value.outcome==='Solicitar revisión de equipo'?'Segunda revisión':'Cerrada';
  } else if(action==='approve'||action==='return'){
@@ -51,8 +52,23 @@ export function onboard(s,{number,shift,checks}){
 export function gate(s){
  const rows=s.weeks.map(w=>({...w,availability:w.scheduled?w.usable/w.scheduled:null,review:w.priority?w.sameDay/w.priority:null}));
  const failed=w=>w.availability!==null&&w.review!==null&&(w.availability<.95||w.review<.9);
- const pause=!s.funded||s.misuse||rows.slice(-2).every(failed);
- return {rows,pause,reason:!s.funded?'Soporte sin fondos':s.misuse?'Uso indebido sin resolver':pause?'Dos semanas bajo los umbrales':'Revisar preparación antes de ampliar'};
+ const insufficient=rows.length<2||rows.some(w=>w.availability===null||w.review===null);
+ const pause=insufficient||!s.funded||s.misuse||rows.slice(-2).every(failed);
+ return {rows,pause,reason:insufficient?'Sin evidencia suficiente':!s.funded?'Soporte sin fondos':s.misuse?'Uso indebido sin resolver':pause?'Dos semanas bajo los umbrales':'Revisar preparación antes de ampliar'};
 }
 export function save(s,storage=localStorage){storage.setItem('colectivo-demo-v1',JSON.stringify(s));}
-export function load(storage=localStorage){try{const s=JSON.parse(storage.getItem('colectivo-demo-v1'));if(s?.version===1&&Array.isArray(s.events)&&Array.isArray(s.units)&&Array.isArray(s.pending))return s;}catch{}return initial();}
+export function validState(s){
+ const array=(x,max)=>Array.isArray(x)&&x.length<=max;
+ const finite=x=>Number.isFinite(x)&&x>=0;
+ if(!s||s.version!==1||typeof s.online!=='boolean'||typeof s.funded!=='boolean'||typeof s.misuse!=='boolean'||!array(s.units,25)||s.units.length<1||!array(s.events,1000)||!array(s.pending,1000)||!array(s.audit,5000)||!array(s.weeks,8)||s.weeks.length!==2)return false;
+ if(!s.units.every(u=>/^C-(0[1-9]|1[0-9]|2[0-5])$/.test(u.id)&&/^SIM-([1-9]|1[0-9]|2[0-5])$/.test(u.device)&&['Mañana','Tarde'].includes(u.shift)&&typeof u.ready==='boolean'&&typeof u.relief==='boolean')||new Set(s.units.map(u=>u.id)).size!==s.units.length)return false;
+ if(!s.weeks.every(w=>[w.scheduled,w.usable,w.priority,w.sameDay].every(finite)&&w.usable<=w.scheduled&&w.sameDay<=w.priority))return false;
+ const roles=[null,'Despacho A','Despacho B'];
+ const events=[...s.events,...s.pending];
+ if(new Set(events.map(e=>e.id)).size!==events.length)return false;
+ return events.every(e=>{
+  try{const prediction=classify(e.sensor);return /^E-[0-9]+-[0-9]+$/.test(e.id)&&s.units.some(u=>u.id===e.unit)&&finite(e.createdAt)&&(e.receivedAt===null||finite(e.receivedAt))&&typeof e.shared==='boolean'&&(!e.shared||e.receivedAt!==null)&&['Nueva','Segunda revisión','Cerrada','Apoyo acordado'].includes(e.status)&&['',...contexts].includes(e.context)&&roles.includes(e.firstReviewer)&&roles.includes(e.secondReviewer)&&e.label===prediction.label&&e.priority===prediction.priority&&e.agreement===prediction.agreement&&e.model===prediction.model&&Array.isArray(e.position)&&e.position.length===2&&e.position.every(Number.isFinite);}
+  catch{return false;}
+ })&&s.audit.every(a=>events.some(e=>e.id===a.id)&&['share','review','approve','return','reopen'].includes(a.action)&&['Titular','Despacho A','Despacho B'].includes(a.role)&&finite(a.at));
+}
+export function load(storage=localStorage){try{const s=JSON.parse(storage.getItem('colectivo-demo-v1'));if(validState(s))return s;}catch{}return initial();}

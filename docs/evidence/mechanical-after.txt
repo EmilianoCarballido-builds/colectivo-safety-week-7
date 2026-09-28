@@ -1,0 +1,17 @@
+✔ new measurements reach owner before dispatcher (1.32675ms)
+✔ support requires context and distinct second reviewer; owner can reopen (0.120959ms)
+✔ offline queue persists and reconnect delivers each ID once (0.774041ms)
+✔ onboarding validates requirements and duplicates (0.090917ms)
+✔ ML classifies synthetic fixtures and rejects invalid sensors (0.0655ms)
+✔ thresholds, two failed weeks and funding override (0.172625ms)
+✔ zero exposure must never approve expansion (0.211833ms)
+✔ corrupt persisted state is rejected safely (0.108667ms)
+✔ insufficient driver context cannot authorize a support action (0.187667ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 48.839666
