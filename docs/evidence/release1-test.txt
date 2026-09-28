@@ -1,0 +1,79 @@
+✔ new measurements reach owner before dispatcher (0.646542ms)
+✔ support requires context and distinct second reviewer; owner can reopen (0.663708ms)
+✔ offline queue persists and reconnect delivers each ID once (0.295375ms)
+✔ onboarding validates requirements and duplicates (0.157667ms)
+✔ ML classifies synthetic fixtures and rejects invalid sensors (0.070708ms)
+✔ thresholds, two failed weeks and funding override (0.135375ms)
+✖ zero exposure must never approve expansion (0.69175ms)
+✖ corrupt persisted state is rejected safely (0.196ms)
+✖ insufficient driver context cannot authorize a support action (0.131666ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 6
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42.259709
+
+✖ failing tests:
+
+test at ../../release1.test.mjs:10:1
+✖ zero exposure must never approve expansion (0.69175ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///Users/emilianocarballido/Documents/Codex/2026-09-27/referenced-chatgpt-conversation-this-is-an/release1.test.mjs:10:148)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../release1.test.mjs:11:1
+✖ corrupt persisted state is rejected safely (0.196ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 10
+  
+      at TestContext.<anonymous> (file:///Users/emilianocarballido/Documents/Codex/2026-09-27/referenced-chatgpt-conversation-this-is-an/release1.test.mjs:11:149)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 10,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../release1.test.mjs:12:1
+✖ insufficient driver context cannot authorize a support action (0.131666ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Users/emilianocarballido/Documents/Codex/2026-09-27/referenced-chatgpt-conversation-this-is-an/release1.test.mjs:12:112)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
